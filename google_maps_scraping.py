@@ -85,17 +85,17 @@ for url in urls:
         address = 'N/A'
 
     try:
-        website = driver.find_element(By.CSS_SELECTOR, 'a[aria-label^="Website:"]').get_attribute('href')
+        website = driver.find_element(By.CSS_SELECTOR, 'a[aria-label*="الموقع الإلكتروني"]').get_attribute('href')
     except:
         website = 'N/A'
 
     try:
-        phone = driver.find_element(By.CSS_SELECTOR, 'button[aria-label*="Phone:"]').text
+        phone = driver.find_element(By.CSS_SELECTOR, 'button[data-item-id^="phone:tel"]').text
     except:
         phone = 'N/A'
 
     try:
-        category = driver.find_element(By.CSS_SELECTOR, '[jsaction="pane.rating.category"]').text
+        category = driver.find_element(By.CSS_SELECTOR, '.DkEaL').text
     except:
         category = 'N/A'
 
