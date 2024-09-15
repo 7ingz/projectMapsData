@@ -24,6 +24,20 @@ from openpyxl import load_workbook, Workbook
 
 sheet_name = 'data.xlsx'
 
+# Read the URLs from urls.txt
+def load_urls_from_file(urls_filename):
+    try:
+        with open(urls_filename, 'r') as file:
+            return [line.strip() for line in file.readlines()]
+    except FileNotFoundError:
+        print(f"Error: {urls_filename} not found.")
+        return []
+
+# Define your urls list
+urls_filename = 'urls.txt'
+urls = load_urls_from_file(urls_filename)
+
+
 # Write Headline and create a new excel sheet
 def xl_sheet_headlines(sheet_name=sheet_name):
     wb = Workbook()
@@ -61,6 +75,33 @@ def get_email(url):
     email = [line for line in email_list if domain in line][0]
     
     return email
+
+# Load existing URLs from Excel to avoid duplicates
+def load_existing_urls_from_excel(sheet_name):
+    try:
+        wb = load_workbook(sheet_name)
+        ws = wb.active
+        existing_urls = set()
+
+        for row in ws.iter_rows(min_row=2, max_col=1):  # Assuming URL is in the first column
+            url = row[0].value
+            if url:
+                existing_urls.add(url)
+
+        return existing_urls
+    except FileNotFoundError:
+        return set()
+
+# Check for duplicates in Excel before writing
+existing_urls_in_excel = load_existing_urls_from_excel(sheet_name)
+
+for url in urls:
+    if url in existing_urls_in_excel:
+        print(f"URL {url} already in Excel, skipping.")
+        continue
+
+    # Write new data to Excel
+
 
 driver = driver_define()
 urls_filename = 'urls.txt'
@@ -114,5 +155,5 @@ for url in urls:
     print("email:", email)
 
     write_data = [url, name, address, website, phone, category, email]
-
+    
     xl_write(write_data)

@@ -61,17 +61,30 @@ def scroll_and_collect_urls(driver, scroll_times):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)  # Wait for the page to load new businesses
 
+# Load existing URLs into a set
+def load_existing_urls():
+    try:
+        with open(urls_filename, 'r') as f:
+            return set([line.strip() for line in f])
+    except FileNotFoundError:
+        return set()
+
+# Function to append URL to the file if not already present
+def append_url_to_file(url):
+    if url not in existing_urls:
+        with open(urls_filename, 'a') as f:
+            f.write(url + '\n')
+        existing_urls.add(url)
+        print(f"New URL added: {url}")
+
+
+
 if __name__ == "__main__":
-    # Initialize the driver
+    existing_urls = load_existing_urls()  # Load existing URLs at the start
+
     driver = driver_define()
-    
-    # Search for the term in Google Maps
     search_google_maps(driver, search_term)
-    
-    # Scroll and collect business URLs
     scroll_and_collect_urls(driver, scroll_times)
-    
-    # Close the browser after scraping
     driver.quit()
-    
+
     print("URLs have been collected and saved to urls.txt.")
